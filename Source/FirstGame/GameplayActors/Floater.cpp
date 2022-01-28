@@ -13,8 +13,12 @@ AFloater::AFloater()
 
 	InitialLocation = FVector(0.0f);
 	PlacedLocation = FVector(0.0f);
+	WorldOrigin = FVector(0.0f, 0.0f, 0.0f);
 	
+	InitialDirection = FVector(0.0f, 0.0f, 0.0f);
+
 	bInitializeFloaterLocations = false;
+	bShouldFloat = false;
 
 }
 
@@ -38,6 +42,12 @@ void AFloater::BeginPlay()
 void AFloater::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (bShouldFloat)
+	{
+		FHitResult HitResult;
+		AddActorLocalOffset(InitialDirection, false, &HitResult);
+	}
 
 }
 
