@@ -65,7 +65,7 @@ void ACollider::Tick(float DeltaTime)
 	SetActorRotation(NewRotation);
 
 	FRotator NewSpringArmRotation = SpringArm->GetComponentRotation();
-	NewSpringArmRotation.Pitch += CameraInput.Y;
+	NewSpringArmRotation.Pitch = FMath::Clamp(NewSpringArmRotation.Pitch += CameraInput.Y, -80.f, -15.f);
 	SpringArm->SetWorldRotation(NewSpringArmRotation);
 }
 
