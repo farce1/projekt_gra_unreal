@@ -36,8 +36,8 @@ public:
 	float MaxSpeed;
 
 private:
-	void MoveForward(float Value);
-	void MoveRight(float Value);
+	void MoveForward(float input);
+	void MoveRight(float input);
 
 	FVector CurrentVelocity;
 };

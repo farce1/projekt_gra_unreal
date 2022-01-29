@@ -52,12 +52,12 @@ void ACritter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	
 }
 
-void ACritter::MoveForward(float Value)
+void ACritter::MoveForward(float input)
 {
-	CurrentVelocity.X = FMath::Clamp(Value, -1.f, 1.f) * MaxSpeed;
+	CurrentVelocity.X = FMath::Clamp(input, -1.f, 1.f) * MaxSpeed;
 }
 
-void ACritter::MoveRight(float Value)
+void ACritter::MoveRight(float input)
 {
-	CurrentVelocity.Y = FMath::Clamp(Value, -1.f, 1.f) * MaxSpeed;
+	CurrentVelocity.Y = FMath::Clamp(input, -1.f, 1.f) * MaxSpeed;
 }
