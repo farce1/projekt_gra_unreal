@@ -14,4 +14,16 @@ class FIRSTGAME_API AMainPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 	
+public:
+
+	// Ref to UMG asset
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widgets")
+	TSubclassOf<class UUserWidget> HUDOverlayAsset;
+
+	// Hold widget in variable
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widgets")
+	UUserWidget* HUDOverlay;
+
+protected:
+	virtual void BeginPlay() override;
 };
