@@ -4,19 +4,18 @@
 
 #include "CoreMinimal.h"
 #include "Item.h"
-#include "Explosive.generated.h"
+#include "Pickup.generated.h"
 
+/**
+ * 
+ */
 UCLASS()
-class FIRSTGAME_API AExplosive : public AItem
+class FIRSTGAME_API APickup : public AItem
 {
 	GENERATED_BODY()
-
 public:
 
-	AExplosive();
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
-	float Damage;
+	APickup();
 
 	// dont mark ufunction macro because child already inherited this macro from parent
 	virtual void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
