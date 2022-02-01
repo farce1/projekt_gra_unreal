@@ -30,6 +30,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item | Particles")
 	class UParticleSystem* OverlapParticles;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item | Sounds")
+	class USoundCue* OverlapSound;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
