@@ -32,19 +32,26 @@ public:
 	/*Player stats*/
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Player Stats")
-		float MaxHealth;
+	float MaxHealth;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Stats")
-		float Health;
+	float Health;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Player Stats")
-		float MaxStamina;
+	float MaxStamina;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Stats")
-		float Stamina;
+	float Stamina;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Stats")
-		int32 Coins;
+	int32 Coins;
+
+	// Functions to manipulate players stats
+	void DecrementHealth(float Amount);
+
+	void Die();
+
+	void IncrementCoin(int32 Amount);
 
 protected:
 	// Called when the game starts or when spawned
