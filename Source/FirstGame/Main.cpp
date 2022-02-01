@@ -45,6 +45,8 @@ AMain::AMain()
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.f, 0.0f); // <- at this rotation rate
 	GetCharacterMovement()->JumpZVelocity = 650.f;
 	GetCharacterMovement()->AirControl = 0.2f;
+	bMovingForward = false;
+	bMovingRight = false;
 
 	// Initial player stats
 	MaxHealth = 100.f;
@@ -57,6 +59,14 @@ AMain::AMain()
 	RunningSpeed = 650.f;
 	SprintingSpeed = 950.f;
 	bShiftKeyDown = false;
+
+	//Initialize Enums
+	MovementStatus = EMovementStatus::EMS_Normal;
+	StaminaStatus = EStaminaStatus::ESS_Normal;
+
+	StaminaDrainRate = 25.f;
+	MinSprintStamina = 50.f;
+
 }
 
 // Called when the game starts or when spawned
@@ -71,6 +81,109 @@ void AMain::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (MovementStatus == EMovementStatus::EMS_Dead) return;
+
+	float DeltaStamina = StaminaDrainRate * DeltaTime;
+
+	switch (StaminaStatus)
+	{
+	case EStaminaStatus::ESS_Normal:
+		if (bShiftKeyDown)
+		{
+			if (Stamina - DeltaStamina <= MinSprintStamina)
+			{
+				SetStaminaStatus(EStaminaStatus::ESS_BelowMinimum);
+				Stamina -= DeltaStamina;
+			}
+			else
+			{
+				Stamina -= DeltaStamina;
+			}
+			if (bMovingForward || bMovingRight)
+			{
+				SetMovementStatus(EMovementStatus::EMS_Sprinting);
+			}
+			else
+			{
+				SetMovementStatus(EMovementStatus::EMS_Normal);
+			}
+		}
+		else // Shift key up
+		{
+			if (Stamina + DeltaStamina >= MaxStamina)
+			{
+				Stamina = MaxStamina;
+			}
+			else
+			{
+				Stamina += DeltaStamina;
+			}
+			SetMovementStatus(EMovementStatus::EMS_Normal);
+		}
+		break;
+	case EStaminaStatus::ESS_BelowMinimum:
+		if (bShiftKeyDown)
+		{
+			if (Stamina - DeltaStamina <= 0.f)
+			{
+				SetStaminaStatus(EStaminaStatus::ESS_Exhausted);
+				Stamina = 0;
+				SetMovementStatus(EMovementStatus::EMS_Normal);
+			}
+			else
+			{
+				Stamina -= DeltaStamina;
+				if (bMovingForward || bMovingRight)
+				{
+					SetMovementStatus(EMovementStatus::EMS_Sprinting);
+				}
+				else
+				{
+					SetMovementStatus(EMovementStatus::EMS_Normal);
+				}
+			}
+		}
+		else // Shift key up
+		{
+			if (Stamina + DeltaStamina >= MinSprintStamina)
+			{
+				SetStaminaStatus(EStaminaStatus::ESS_Normal);
+				Stamina += DeltaStamina;
+			}
+			else
+			{
+				Stamina += DeltaStamina;
+			}
+			SetMovementStatus(EMovementStatus::EMS_Normal);
+		}
+		break;
+	case EStaminaStatus::ESS_Exhausted:
+		if (bShiftKeyDown)
+		{
+			Stamina = 0.f;
+		}
+		else // Shift key up
+		{
+			SetStaminaStatus(EStaminaStatus::ESS_ExhaustedRecovering);
+			Stamina += DeltaStamina;
+		}
+		SetMovementStatus(EMovementStatus::EMS_Normal);
+		break;
+	case EStaminaStatus::ESS_ExhaustedRecovering:
+		if (Stamina + DeltaStamina >= MinSprintStamina)
+		{
+			SetStaminaStatus(EStaminaStatus::ESS_Normal);
+			Stamina += DeltaStamina;
+		}
+		else
+		{
+			Stamina += DeltaStamina;
+		}
+		SetMovementStatus(EMovementStatus::EMS_Normal);
+		break;
+	default:
+		;
+	}
 }
 
 // Called to bind functionality to input
@@ -99,6 +212,7 @@ void AMain::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void AMain::MoveForward(float input)
 {
+	bMovingForward = false;
 	if ((Controller != nullptr) && (input != 0.0f))
 	{
 		// find out which way is forward
@@ -107,12 +221,14 @@ void AMain::MoveForward(float input)
 
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 		AddMovementInput(Direction, input);
+		bMovingForward = true;
 	}
 }
 
 
 void AMain::MoveRight(float input)
 {
+	bMovingRight = false;
 	if ((Controller != nullptr) && (input != 0.0f))
 	{
 		// find out which way is forward
@@ -121,6 +237,7 @@ void AMain::MoveRight(float input)
 
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 		AddMovementInput(Direction, input);
+		bMovingRight = true;
 	}
 }
 
