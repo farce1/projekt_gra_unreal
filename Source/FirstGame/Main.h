@@ -6,6 +6,15 @@
 #include "GameFramework/Character.h"
 #include "Main.generated.h"
 
+// wont be accesible with 'class'; create animation movement statuses in enum
+UENUM(BlueprintType)
+enum class EMovementStatus : uint8
+{
+	EMS_Normal UMETA(DisplayName = "Normal"),
+	EMS_Sprinting UMETA(DisplayName = "Sprinting"),
+	EMS_MAX UMETA(DisplayName = "DefaultMax")
+};
+
 UCLASS()
 class FIRSTGAME_API AMain : public ACharacter
 {
@@ -14,6 +23,19 @@ class FIRSTGAME_API AMain : public ACharacter
 public:
 	// Sets default values for this character's properties
 	AMain();
+
+	// Declare Enum as public variable
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Enums")
+	EMovementStatus MovementStatus;
+
+	/*Set movement status*/
+	void SetMovementStatus(EMovementStatus Status);
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Running")
+	float RunningSpeed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Running")
+	float SprintingSpeed;
 
 	/** Camera boom positioning the camera behind the player*/
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))

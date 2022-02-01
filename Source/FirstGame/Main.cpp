@@ -52,6 +52,10 @@ AMain::AMain()
 	MaxStamina = 150.f;
 	Stamina = 120.f;
 	Coins = 0;
+
+	// Initial player movement speeds
+	RunningSpeed = 650.f;
+	SprintingSpeed = 950.f;
 }
 
 // Called when the game starts or when spawned
@@ -149,4 +153,17 @@ void AMain::Die()
 void AMain::IncrementCoin(int32 Amount)
 {
 	Coins += Amount;
+}
+
+void AMain::SetMovementStatus(EMovementStatus Status)
+{
+	MovementStatus = Status;
+	if (MovementStatus == EMovementStatus::EMS_Sprinting)
+	{
+		GetCharacterMovement()->MaxWalkSpeed = SprintingSpeed;
+	}
+	else
+	{ 
+		GetCharacterMovement()->MaxWalkSpeed = RunningSpeed;
+	}
 }
