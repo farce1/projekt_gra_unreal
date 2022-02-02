@@ -19,6 +19,8 @@ void APickup::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* O
 		if (Main)
 		{
 			Main->IncrementCoin(CoinValue);
+			// auto remove actor from the field --- super efficient :)
+			Destroy();
 		}
 	}
 }

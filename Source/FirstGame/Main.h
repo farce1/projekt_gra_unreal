@@ -107,6 +107,12 @@ public:
 	/*Set stamina status*/
 	FORCEINLINE void SetStaminaStatus(EStaminaStatus Status) { StaminaStatus = Status; }
 
+	/*Handle Character weapon*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Items)
+	class AWeapon* EquippedWeapon;
+
+	FORCEINLINE void SetEquippedWeapon(AWeapon* WeaponToSet) { EquippedWeapon = WeaponToSet; }
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
