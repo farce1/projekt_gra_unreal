@@ -4,12 +4,16 @@
 #include "Weapon.h"
 #include "Main.h"
 #include "Engine/SkeletalMeshSocket.h"
+#include "Sound/SoundCue.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "Particles/ParticleSystemComponent.h"
 
 AWeapon::AWeapon()
 {
 	SkeletalMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMesh"));
 	SkeletalMesh->SetupAttachment(GetRootComponent());
+	bWeaponParticle = false;
 }
 
 
@@ -21,7 +25,7 @@ void AWeapon::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* O
 		AMain* Main = Cast<AMain>(OtherActor);
 		if (Main)
 		{
-			Equip(Main);
+			Main->SetActiveOverlappingItem(this);
 		}
 	}
 }
@@ -29,6 +33,14 @@ void AWeapon::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* O
 void AWeapon::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	Super::OnOverlapEnd(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex);
+	if (OtherActor)
+	{
+		AMain* Main = Cast<AMain>(OtherActor);
+		if (Main)
+		{
+			Main->SetActiveOverlappingItem(nullptr);
+		}
+	}
 }
 
 void AWeapon::Equip(AMain* Character)
@@ -48,6 +60,11 @@ void AWeapon::Equip(AMain* Character)
 			bRotate = false;
 
 			Character->SetEquippedWeapon(this);
+		}
+		if (OnEquipSound) UGameplayStatics::PlaySound2D(this, OnEquipSound);
+		if (!bWeaponParticle)
+		{
+			IdleParticlesComponent->Deactivate();
 		}
 	}
 }

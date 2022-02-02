@@ -7,6 +7,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Engine/World.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Weapon.h"
 
 // Sets default values
 AMain::AMain()
@@ -67,6 +68,8 @@ AMain::AMain()
 	StaminaDrainRate = 25.f;
 	MinSprintStamina = 50.f;
 
+	// Pickup item
+	bLeftMouseButtonDown = false;
 }
 
 // Called when the game starts or when spawned
@@ -198,6 +201,9 @@ void AMain::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &AMain::ShiftKeyDown);
 	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &AMain::ShiftKeyUp);
 
+	PlayerInputComponent->BindAction("LeftMouseButton", IE_Pressed, this, &AMain::LeftMouseButtonDown);
+	PlayerInputComponent->BindAction("LeftMouseButton", IE_Released, this, &AMain::LeftMouseButtonUp);
+
 	PlayerInputComponent->BindAxis("MoveForward", this, &AMain::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AMain::MoveRight);
 
@@ -297,4 +303,24 @@ void AMain::ShiftKeyDown()
 void AMain::ShiftKeyUp()
 {
 	bShiftKeyDown = false;
+}
+
+void AMain::LeftMouseButtonUp()
+{
+	bLeftMouseButtonDown = false;
+}
+
+void AMain::LeftMouseButtonDown()
+{
+	bLeftMouseButtonDown = true;
+
+	if (ActiveOverlappingItem)
+	{
+		AWeapon* Weapon = Cast<AWeapon>(ActiveOverlappingItem);
+		if (Weapon)
+		{
+			Weapon->Equip(this);
+			SetActiveOverlappingItem(nullptr);
+		}
+	}
 }
