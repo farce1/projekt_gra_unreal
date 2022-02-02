@@ -124,7 +124,7 @@ public:
 
 	FORCEINLINE void SetActiveOverlappingItem(AItem* Item) { ActiveOverlappingItem = Item; }
 
-	FORCEINLINE void SetEquippedWeapon(AWeapon* WeaponToSet) { EquippedWeapon = WeaponToSet; }
+	void SetEquippedWeapon(AWeapon* WeaponToSet);
 
 protected:
 	// Called when the game starts or when spawned

@@ -6,9 +6,17 @@
 #include "Item.h"
 #include "Weapon.generated.h"
 
-/**
- * 
- */
+// Describe weapon states
+UENUM(BlueprintType)
+enum class EWeaponState :uint8
+{
+	EWS_Pickup		UMETA(DisplayName = "Pickup"),
+	EWS_Equipped	UMETA(DisplayName = "Equipped"),
+
+	EWS_MAX	UMETA(DisplayName = "DefaultMax")
+};
+
+
 UCLASS()
 class FIRSTGAME_API AWeapon : public AItem
 {
@@ -16,6 +24,9 @@ class FIRSTGAME_API AWeapon : public AItem
 public:
 
 	AWeapon();
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Item")
+	EWeaponState WeaponState;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item | Sound")
 	class USoundCue* OnEquipSound;
@@ -27,6 +38,9 @@ public:
 	bool bWeaponParticle;
 
 	void Equip(class AMain* Char);
+
+	FORCEINLINE void SetWeaponState(EWeaponState State) { WeaponState = State; }
+	FORCEINLINE EWeaponState GetWeaponState() { return WeaponState; }
 
 	virtual void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
 
