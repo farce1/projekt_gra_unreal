@@ -35,6 +35,12 @@ public:
 	FORCEINLINE void SetEnemyMovementStatus(EEnemyMovementStatus Status) { EnemyMovementStatus = Status; }
 	FORCEINLINE EEnemyMovementStatus GetEnemyMovementStatus() { return EnemyMovementStatus; }
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AI")
+	class USphereComponent* AggroSphere;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AI")
+	USphereComponent* CombatSphere;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
