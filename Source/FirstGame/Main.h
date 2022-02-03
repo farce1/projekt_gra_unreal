@@ -126,6 +126,18 @@ public:
 
 	void SetEquippedWeapon(AWeapon* WeaponToSet);
 
+	// Handle attacking animations and flows
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Anims")
+	bool bIsAttacking;
+
+	void Attack();
+
+	UFUNCTION(BlueprintCallable)
+	void AttackEnd();
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Anims")
+	class UAnimMontage* CombatMontage;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

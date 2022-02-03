@@ -8,6 +8,8 @@
 #include "Engine/World.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Weapon.h"
+#include "Components/SkeletalMeshComponent.h"
+#include "Animation/AnimInstance.h"
 
 // Sets default values
 AMain::AMain()
@@ -61,7 +63,7 @@ AMain::AMain()
 	SprintingSpeed = 950.f;
 	bShiftKeyDown = false;
 
-	//Initialize Enums
+	// Initialize Enums
 	MovementStatus = EMovementStatus::EMS_Normal;
 	StaminaStatus = EStaminaStatus::ESS_Normal;
 
@@ -70,6 +72,9 @@ AMain::AMain()
 
 	// Pickup item
 	bLeftMouseButtonDown = false;
+
+	// Attack handlers
+	bIsAttacking = false;
 }
 
 // Called when the game starts or when spawned
@@ -219,7 +224,7 @@ void AMain::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 void AMain::MoveForward(float input)
 {
 	bMovingForward = false;
-	if ((Controller != nullptr) && (input != 0.0f))
+	if ((Controller != nullptr) && (input != 0.0f) && (!bIsAttacking))
 	{
 		// find out which way is forward
 		const FRotator Rotation = Controller->GetControlRotation();
@@ -235,7 +240,7 @@ void AMain::MoveForward(float input)
 void AMain::MoveRight(float input)
 {
 	bMovingRight = false;
-	if ((Controller != nullptr) && (input != 0.0f))
+	if ((Controller != nullptr) && (input != 0.0f) && (!bIsAttacking))
 	{
 		// find out which way is forward
 		const FRotator Rotation = Controller->GetControlRotation();
@@ -323,6 +328,10 @@ void AMain::LeftMouseButtonDown()
 			SetActiveOverlappingItem(nullptr);
 		}
 	}
+	else if (EquippedWeapon)
+	{
+		Attack();
+	}
 }
 
 void AMain::SetEquippedWeapon(AWeapon* WeaponToSet)
@@ -333,4 +342,45 @@ void AMain::SetEquippedWeapon(AWeapon* WeaponToSet)
 	}
 
 	EquippedWeapon = WeaponToSet;
+}
+
+void AMain::Attack()
+{
+	if (!bIsAttacking && MovementStatus != EMovementStatus::EMS_Dead)
+	{
+		bIsAttacking = true;
+
+		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+		// check if instances are valid
+		if (AnimInstance && CombatMontage)
+		{
+			// schedule every section randomly
+			int32 Section = FMath::RandRange(0, 2);
+			switch (Section)
+			{
+			case 0:
+				AnimInstance->Montage_Play(CombatMontage, 2.0f);
+				AnimInstance->Montage_JumpToSection(FName("att1"), CombatMontage);
+				
+				break;
+			case 1:
+				AnimInstance->Montage_Play(CombatMontage, 2.0f);
+				AnimInstance->Montage_JumpToSection(FName("att2"), CombatMontage);
+				break;
+			case 2:
+				AnimInstance->Montage_Play(CombatMontage, 2.5f);
+				AnimInstance->Montage_JumpToSection(FName("att3"), CombatMontage);
+				break;
+			}
+		}
+	}
+}
+
+void AMain::AttackEnd()
+{
+	bIsAttacking = false;
+	if (bLeftMouseButtonDown)
+	{
+		Attack();
+	}
 }
