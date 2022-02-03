@@ -23,6 +23,8 @@ AEnemy::AEnemy()
 	CombatSphere->SetupAttachment(GetRootComponent());
 	CombatSphere->InitSphereRadius(75.f);
 
+	bOverlappingCombatSphere = false;
+
 }
 
 // Called when the game starts or when spawned
@@ -37,6 +39,7 @@ void AEnemy::BeginPlay()
 
 	CombatSphere->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::CombatSphereOnOverlapBegin);
 	CombatSphere->OnComponentEndOverlap.AddDynamic(this, &AEnemy::CombatSphereOnOverlapEnd);
+
 }
 
 // Called every frame
@@ -88,6 +91,8 @@ void AEnemy::CombatSphereOnOverlapBegin(UPrimitiveComponent* OverlappedComponent
 		AMain* Main = Cast<AMain>(OtherActor);
 		if (Main)
 		{
+			CombatTarget = Main;
+			bOverlappingCombatSphere = true;
 			SetEnemyMovementStatus(EEnemyMovementStatus::EMS_Attacking);
 		}
 	}
@@ -100,8 +105,12 @@ void AEnemy::CombatSphereOnOverlapEnd(UPrimitiveComponent* OverlappedComponent, 
 		AMain* Main = Cast<AMain>(OtherActor);
 		if (Main)
 		{
-			SetEnemyMovementStatus(EEnemyMovementStatus::EMS_MoveToTarget);
-			MoveToTarget(Main);
+			bOverlappingCombatSphere = false;
+			if (EnemyMovementStatus != EEnemyMovementStatus::EMS_Attacking)
+			{
+				CombatTarget = nullptr;
+				MoveToTarget(Main);
+			}
 		}
 	}
 }

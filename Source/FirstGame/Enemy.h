@@ -45,6 +45,14 @@ public:
 	// Create AI controller
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AI")
 	class AAIController* AIController;
+	
+	// Set state for overlap sphere
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AI")
+	bool bOverlappingCombatSphere;
+
+	// Create main character as combat target
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AI")
+	AMain* CombatTarget;
 
 protected:
 	// Called when the game starts or when spawned
