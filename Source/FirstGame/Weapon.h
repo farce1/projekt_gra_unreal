@@ -37,6 +37,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item | Particles")
 	bool bWeaponParticle;
 
+	// Set weapon collision grid for combat 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Item | Combat")
+	class UBoxComponent* CombatCollision;
+
 	void Equip(class AMain* Char);
 
 	FORCEINLINE void SetWeaponState(EWeaponState State) { WeaponState = State; }

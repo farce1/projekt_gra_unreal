@@ -8,13 +8,19 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "Components/BoxComponent.h"
 
 AWeapon::AWeapon()
 {
 	SkeletalMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMesh"));
 	SkeletalMesh->SetupAttachment(GetRootComponent());
+
 	bWeaponParticle = false;
 	WeaponState = EWeaponState::EWS_Pickup;
+
+	// initialize box for collision with weapon
+	CombatCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("CombatCollision"));
+	CombatCollision->SetupAttachment(GetRootComponent());
 }
 
 
