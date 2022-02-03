@@ -23,19 +23,16 @@ void UEnemyAnimInstance::UpdateAnimationProperties()
 	if (Pawn == nullptr)
 	{
 		Pawn = TryGetPawnOwner();
+		if (Pawn)
+		{
+			Enemy = Cast<AEnemy>(Pawn);
+		}
 	}
 
 	if (Pawn)
 	{
-		// mirror movement functionality from Main Anim
 		FVector Speed = Pawn->GetVelocity();
 		FVector LateralSpeed = FVector(Speed.X, Speed.Y, 0.f);
 		MovementSpeed = LateralSpeed.Size();
-
-		if (Enemy == nullptr)
-		{
-			// access enemy instance from blueprint 
-			Enemy = Cast<AEnemy>(Pawn);
-		}
 	}
 }
