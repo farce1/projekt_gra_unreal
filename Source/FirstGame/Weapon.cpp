@@ -3,13 +3,13 @@
 
 #include "Weapon.h"
 #include "Main.h"
-#include "Engine/SkeletalMeshSocket.h"
 #include "Sound/SoundCue.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "Components/BoxComponent.h"
 #include "Enemy.h"
+#include "Engine/SkeletalMeshSocket.h"
 
 AWeapon::AWeapon()
 {
@@ -105,6 +105,7 @@ void AWeapon::CombatOnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AAc
 			// verify if hit particles are set
 			if (Enemy->HitParticles)
 			{
+				const USkeletalMeshSocket* WeaponSocket = SkeletalMesh->GetSocketByName("WeaponSocket");
 				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), Enemy->HitParticles, GetActorLocation(), FRotator(0.f), true);
 			}
 		}
