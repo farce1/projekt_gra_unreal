@@ -3,6 +3,7 @@
 
 #include "Enemy.h"
 #include "Components/SphereComponent.h"
+#include "AIController.h"
 
 // Sets default values
 AEnemy::AEnemy()
@@ -27,7 +28,8 @@ AEnemy::AEnemy()
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	AIController = Cast<AAIController>(GetController());
 }
 
 // Called every frame
