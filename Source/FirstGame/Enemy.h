@@ -64,6 +64,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
 	float Damage;
 
+	// Set custom particle systems for different enemy types
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
+	class UParticleSystem* HitParticles;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
