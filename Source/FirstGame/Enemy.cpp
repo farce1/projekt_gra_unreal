@@ -67,7 +67,18 @@ void AEnemy::AggroSphereOnOverlapBegin(UPrimitiveComponent* OverlappedComponent,
 
 void AEnemy::AggroSphereOnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-
+	if (OtherActor)
+	{
+		AMain* Main = Cast<AMain>(OtherActor);
+		if (Main)
+		{
+			SetEnemyMovementStatus(EEnemyMovementStatus::EMS_Idle);
+			if (AIController)
+			{
+				AIController->StopMovement();
+			}
+		}
+	}
 }
 
 void AEnemy::CombatSphereOnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -84,7 +95,15 @@ void AEnemy::CombatSphereOnOverlapBegin(UPrimitiveComponent* OverlappedComponent
 
 void AEnemy::CombatSphereOnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-
+	if (OtherActor)
+	{
+		AMain* Main = Cast<AMain>(OtherActor);
+		if (Main)
+		{
+			SetEnemyMovementStatus(EEnemyMovementStatus::EMS_MoveToTarget);
+			MoveToTarget(Main);
+		}
+	}
 }
 
 void AEnemy::MoveToTarget(AMain* Target)
@@ -95,7 +114,7 @@ void AEnemy::MoveToTarget(AMain* Target)
 	{
 		FAIMoveRequest MoveRequest;
 		MoveRequest.SetGoalActor(Target);
-		MoveRequest.SetAcceptanceRadius(25.0f);
+		MoveRequest.SetAcceptanceRadius(10.0f);
 
 		FNavPathSharedPtr NavPath;
 
