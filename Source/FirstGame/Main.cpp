@@ -376,7 +376,7 @@ void AMain::Attack()
 	}
 }
 
-void AMain::AttackEnd()
+void AMain::AttackEnd() 
 {
 	bIsAttacking = false;
 	if (bLeftMouseButtonDown)
