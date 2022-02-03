@@ -25,6 +25,9 @@ AEnemy::AEnemy()
 
 	bOverlappingCombatSphere = false;
 
+	Health = 100.f;
+	MaxHealth = 150.f;
+	Damage = 10.f;
 }
 
 // Called when the game starts or when spawned
