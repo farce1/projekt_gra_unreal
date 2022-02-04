@@ -60,6 +60,14 @@ public:
 	FORCEINLINE void SetWeaponState(EWeaponState State) { WeaponState = State; }
 	FORCEINLINE EWeaponState GetWeaponState() { return WeaponState; }
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
+	TSubclassOf<UDamageType> DamageTypeClass;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
+	AController* WeaponInstigator;
+
+	FORCEINLINE void SetInstigator(AController* Inst) { WeaponInstigator = Inst; }
+
 	// Store sounds
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item | Sound")
 	USoundCue* SwingSound;
