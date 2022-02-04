@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "Main.h"
+#include "Enemy.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -9,9 +9,10 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Weapon.h"
 #include "Components/SkeletalMeshComponent.h"
-#include "Animation/AnimInstance.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Sound/SoundCue.h"
+#include "Animation/AnimInstance.h"
 
 // Sets default values
 AMain::AMain()
@@ -77,6 +78,10 @@ AMain::AMain()
 
 	// Attack handlers
 	bIsAttacking = false;
+
+	// Interpolation variables
+	InterpSpeed = 15.f;
+	bInterpToEnemy = false;
 }
 
 // Called when the game starts or when spawned
@@ -194,6 +199,23 @@ void AMain::Tick(float DeltaTime)
 	default:
 		;
 	}
+
+	if (bInterpToEnemy && CombatTarget)
+	{
+		//rotate character to face the enemy, destination for our rotation
+		FRotator LookAtYaw = GetLookAtRotationYaw(CombatTarget->GetActorLocation());
+		// smoothly translate character to face the enemy via interpolation
+		// get current rotation -> Target rotation -> variable that will make smooth transition
+		FRotator InterpRotation = FMath::RInterpTo(GetActorRotation(), LookAtYaw, DeltaTime, InterpSpeed);
+		SetActorRotation(InterpRotation);
+	}
+}
+
+FRotator AMain::GetLookAtRotationYaw(FVector Target)
+{
+	FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), Target);
+	FRotator LookAtRotationYaw(0.f, LookAtRotation.Yaw, 0.f);
+	return LookAtRotationYaw;
 }
 
 // Called to bind functionality to input
@@ -351,6 +373,7 @@ void AMain::Attack()
 	if (!bIsAttacking && MovementStatus != EMovementStatus::EMS_Dead)
 	{
 		bIsAttacking = true;
+		SetInterpToEnemy(true);
 
 		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 		// check if instances are valid
@@ -381,6 +404,7 @@ void AMain::Attack()
 void AMain::AttackEnd() 
 {
 	bIsAttacking = false;
+	SetInterpToEnemy(false);
 	if (bLeftMouseButtonDown)
 	{
 		Attack();
@@ -393,4 +417,9 @@ void AMain::PlaySwingSound()
 	{
 		UGameplayStatics::PlaySound2D(this, EquippedWeapon->SwingSound);
 	}
+}
+
+void AMain::SetInterpToEnemy(bool Interp)
+{
+	bInterpToEnemy = Interp;
 }
