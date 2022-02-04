@@ -141,7 +141,21 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
 	bool bIsAttacking;
 
+	// Handle enemy death
 	void Die();
+
+	FTimerHandle DeathTimer;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
+	float DeathDelay;
+
+	// Handle enemy destroy after death
+	void Disappear();
+
+	UFUNCTION(BlueprintCallable)
+	void DeathEnd();
+
+	bool IsAlive();
 
 	// override the take damage function 
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
