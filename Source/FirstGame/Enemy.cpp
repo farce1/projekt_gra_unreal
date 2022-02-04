@@ -25,6 +25,8 @@ AEnemy::AEnemy()
 
 	bOverlappingCombatSphere = false;
 
+	EnemyMovementStatus = EEnemyMovementStatus::EMS_Idle;
+
 	Health = 100.f;
 	MaxHealth = 150.f;
 	Damage = 10.f;
@@ -78,6 +80,7 @@ void AEnemy::AggroSphereOnOverlapEnd(UPrimitiveComponent* OverlappedComponent, A
 		AMain* Main = Cast<AMain>(OtherActor);
 		if (Main)
 		{
+
 			SetEnemyMovementStatus(EEnemyMovementStatus::EMS_Idle);
 			if (AIController)
 			{

@@ -137,6 +137,10 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Anims")
 	class UAnimMontage* CombatMontage;
+	
+	// determine when to play sound when character attacks
+	UFUNCTION(BlueprintCallable)
+	void PlaySwingSound();
 
 protected:
 	// Called when the game starts or when spawned

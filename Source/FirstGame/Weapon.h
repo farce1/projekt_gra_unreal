@@ -60,6 +60,10 @@ public:
 	FORCEINLINE void SetWeaponState(EWeaponState State) { WeaponState = State; }
 	FORCEINLINE EWeaponState GetWeaponState() { return WeaponState; }
 
+	// Store sounds
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item | Sound")
+	USoundCue* SwingSound;
+
 
 	virtual void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
 
