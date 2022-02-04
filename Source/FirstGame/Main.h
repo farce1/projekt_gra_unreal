@@ -91,6 +91,9 @@ public:
 	// Functions to manipulate players stats
 	void DecrementHealth(float Amount);
 
+	// override the take damage function 
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
+
 	void Die();
 
 	void IncrementCoin(int32 Amount);
