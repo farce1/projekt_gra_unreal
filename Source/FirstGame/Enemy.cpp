@@ -55,6 +55,9 @@ void AEnemy::BeginPlay()
 	CombatSphere->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::CombatSphereOnOverlapBegin);
 	CombatSphere->OnComponentEndOverlap.AddDynamic(this, &AEnemy::CombatSphereOnOverlapEnd);
 
+	CombatCollision->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::CombatOnOverlapBegin);
+	CombatCollision->OnComponentEndOverlap.AddDynamic(this, &AEnemy::CombatOnOverlapEnd);
+
 	// set collision channels to only chosen one, set collision parameters
 	CombatCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	CombatCollision->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
