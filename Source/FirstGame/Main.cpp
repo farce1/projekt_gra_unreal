@@ -303,7 +303,14 @@ void AMain::DecrementHealth(float Amount)
 
 void AMain::Die()
 {
-
+	if (MovementStatus == EMovementStatus::EMS_Dead) return;
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && CombatMontage)
+	{
+		AnimInstance->Montage_Play(CombatMontage, 1.0f);
+		AnimInstance->Montage_JumpToSection(FName("Death"));
+	}
+	SetMovementStatus(EMovementStatus::EMS_Dead);
 }
 
 void AMain::IncrementCoin(int32 Amount)
