@@ -321,7 +321,7 @@ void AMain::LeftMouseButtonDown()
 {
 	bLeftMouseButtonDown = true;
 
-	if (ActiveOverlappingItem)
+	if (ActiveOverlappingItem && !EquippedWeapon)
 	{
 		AWeapon* Weapon = Cast<AWeapon>(ActiveOverlappingItem);
 		if (Weapon)
