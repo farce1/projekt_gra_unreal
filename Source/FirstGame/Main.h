@@ -142,6 +142,14 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void PlaySwingSound();
 
+	// Set custom particle systems for different enemy types
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
+	class UParticleSystem* HitParticles;
+
+	// set sound for hit
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
+	class USoundCue* HitSound;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
