@@ -3,6 +3,9 @@
 
 #include "Pickup.h"
 #include "Main.h"
+#include "Kismet/GameplayStatics.h"
+#include "Sound/SoundCue.h"
+#include "Engine/World.h"
 
 APickup::APickup()
 {
@@ -18,6 +21,16 @@ void APickup::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* O
 		AMain* Main = Cast<AMain>(OtherActor);
 		if (Main)
 		{
+			// if overlap defined only then do operation
+			if (OverlapParticles)
+			{
+				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), OverlapParticles, GetActorLocation(), FRotator(0.f), true);
+			}
+			// play sound before destroy if defined
+			if (OverlapSound)
+			{
+				UGameplayStatics::PlaySound2D(this, OverlapSound);
+			}
 			Main->IncrementCoin(CoinValue);
 			// auto remove actor from the field --- super efficient :)
 			Destroy();
