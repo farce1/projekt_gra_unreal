@@ -13,6 +13,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Sound/SoundCue.h"
 #include "Animation/AnimInstance.h"
+#include "MainPlayerController.h"
 
 // Sets default values
 AMain::AMain()
@@ -78,6 +79,7 @@ AMain::AMain()
 
 	// Attack handlers
 	bIsAttacking = false;
+	bHasCombatTarget = false;
 
 	// Interpolation variables
 	InterpSpeed = 15.f;
@@ -89,6 +91,7 @@ void AMain::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	MainPlayerController = Cast<AMainPlayerController>(GetController());
 }
 
 // Called every frame
@@ -209,6 +212,14 @@ void AMain::Tick(float DeltaTime)
 		FRotator InterpRotation = FMath::RInterpTo(GetActorRotation(), LookAtYaw, DeltaTime, InterpSpeed);
 		SetActorRotation(InterpRotation);
 	}
+	if (CombatTarget)
+	{
+		CombatTargetLocation = CombatTarget->GetActorLocation();
+		if (MainPlayerController)
+		{
+			MainPlayerController->EnemyLocation = CombatTargetLocation;
+		}
+	}
 }
 
 FRotator AMain::GetLookAtRotationYaw(FVector Target)
@@ -224,7 +235,7 @@ void AMain::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 	check(PlayerInputComponent);
 
-	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
+	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &AMain::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
 	PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &AMain::ShiftKeyDown);
@@ -248,7 +259,7 @@ void AMain::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 void AMain::MoveForward(float input)
 {
 	bMovingForward = false;
-	if ((Controller != nullptr) && (input != 0.0f) && (!bIsAttacking))
+	if ((Controller != nullptr) && (input != 0.0f) && (!bIsAttacking) && (IsAlive()))
 	{
 		// find out which way is forward
 		const FRotator Rotation = Controller->GetControlRotation();
@@ -264,7 +275,7 @@ void AMain::MoveForward(float input)
 void AMain::MoveRight(float input)
 {
 	bMovingRight = false;
-	if ((Controller != nullptr) && (input != 0.0f) && (!bIsAttacking))
+	if ((Controller != nullptr) && (input != 0.0f) && (!bIsAttacking) && (IsAlive()))
 	{
 		// find out which way is forward
 		const FRotator Rotation = Controller->GetControlRotation();
@@ -290,15 +301,7 @@ void AMain::LookUpAtRate(float Rate)
 
 void AMain::DecrementHealth(float Amount)
 {
-	if (Health - Amount <= 0.f)
-	{
-		Health -= Amount;
-		Die();
-	}
-	else
-	{
-		Health -= Amount;
-	}
+
 }
 
 void AMain::Die()
@@ -313,9 +316,28 @@ void AMain::Die()
 	SetMovementStatus(EMovementStatus::EMS_Dead);
 }
 
+void AMain::Jump()
+{
+	if (IsAlive()) {
+		Super::Jump();
+	}
+}
+
 void AMain::IncrementCoin(int32 Amount)
 {
 	Coins += Amount;
+}
+
+void AMain::IncrementHealth(float Amount)
+{
+	if (Health + Amount >= MaxHealth)
+	{
+		Health = MaxHealth;
+	}
+	else
+	{
+		Health += Amount;
+	}
 }
 
 void AMain::SetMovementStatus(EMovementStatus Status)
@@ -350,6 +372,8 @@ void AMain::LeftMouseButtonDown()
 {
 	bLeftMouseButtonDown = true;
 
+	if (MovementStatus == EMovementStatus::EMS_Dead) return;
+
 	if (ActiveOverlappingItem && !EquippedWeapon)
 	{
 		AWeapon* Weapon = Cast<AWeapon>(ActiveOverlappingItem);
@@ -377,7 +401,7 @@ void AMain::SetEquippedWeapon(AWeapon* WeaponToSet)
 
 void AMain::Attack()
 {
-	if (!bIsAttacking && MovementStatus != EMovementStatus::EMS_Dead)
+	if (!bIsAttacking && IsAlive())
 	{
 		bIsAttacking = true;
 		SetInterpToEnemy(true);
@@ -433,7 +457,77 @@ void AMain::SetInterpToEnemy(bool Interp)
 
 float AMain::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
 {
-	DecrementHealth(DamageAmount);
+	if (Health - DamageAmount <= 0.f)
+	{
+		Health -= DamageAmount;
+		Die();
+		if (DamageCauser)
+		{
+			AEnemy* Enemy = Cast<AEnemy>(DamageCauser);
+			if (Enemy)
+			{
+				Enemy->bHasValidTarget = false;
+			}
+		}
+	}
+	else
+	{
+		Health -= DamageAmount;
+	}
 
 	return DamageAmount;
+}
+
+void AMain::DeathEnd()
+{
+	GetMesh()->bPauseAnims = true;
+	GetMesh()->bNoSkeletonUpdate = true;
+}
+
+bool AMain::IsAlive()
+{
+	return MovementStatus != EMovementStatus::EMS_Dead;
+}
+
+void AMain::UpdateCombatTarget()
+{
+	TArray<AActor*> OverlappingActors;
+	GetOverlappingActors(OverlappingActors, EnemyFilter);
+
+	if (OverlappingActors.Num() == 0)
+	{
+		if (MainPlayerController)
+		{
+			MainPlayerController->RemoveEnemyHealthBar();
+		}
+		// make sure that we don't continue on function when no enemies left
+		return;
+	}
+
+	AEnemy* ClosestEnemy = Cast<AEnemy>(OverlappingActors[0]);
+	if (ClosestEnemy)
+	{
+		FVector Location = GetActorLocation();
+		float MinDistance = (ClosestEnemy->GetActorLocation() - Location).Size();
+
+		for (auto Actor : OverlappingActors)
+		{
+			AEnemy* Enemy = Cast<AEnemy>(Actor);
+			if (Enemy)
+			{
+				float DistanceToActor = (Enemy->GetActorLocation() - Location).Size();
+				if (DistanceToActor < MinDistance)
+				{
+					MinDistance = DistanceToActor;
+					ClosestEnemy = Enemy;
+				}
+			}
+		}
+		if (MainPlayerController)
+		{
+			MainPlayerController->DisplayEnemyHealthBar();
+		}
+		SetCombatTarget(ClosestEnemy);
+		bHasCombatTarget = true;
+	}
 }

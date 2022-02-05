@@ -110,6 +110,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void MoveToTarget(class AMain* Target);
 
+	bool bHasValidTarget;
+
 	UFUNCTION()
 	virtual void AggroSphereOnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()
@@ -142,7 +144,7 @@ public:
 	bool bIsAttacking;
 
 	// Handle enemy death
-	void Die();
+	void Die(AActor* Causer);
 
 	FTimerHandle DeathTimer;
 

@@ -96,7 +96,18 @@ public:
 
 	void Die();
 
+	bool IsAlive();
+
+	UFUNCTION(BlueprintCallable)
+	void DeathEnd();
+
+	virtual void Jump() override;
+
+	UFUNCTION(BlueprintCallable)
 	void IncrementCoin(int32 Amount);
+
+	UFUNCTION(BlueprintCallable)
+	void IncrementHealth(float Amount);
 
 	// Declare Enums as public variable
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Enums")
@@ -165,6 +176,26 @@ public:
 	// set sound for hit
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
 	class USoundCue* HitSound;
+
+	// Identify combat target
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
+	bool bHasCombatTarget;
+
+	FORCEINLINE void SetHasCombatTarget(bool HasTarget) { bHasCombatTarget = HasTarget; }
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Controller")
+	class AMainPlayerController* MainPlayerController;
+
+	// Give enemy location to render healthbar properly
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Combat")
+	FVector CombatTargetLocation;
+
+	// Update combat target when fighting with more than 1 enemy
+	void UpdateCombatTarget();
+
+	// Apply enemy filter
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
+	TSubclassOf<AEnemy> EnemyFilter;
 
 protected:
 	// Called when the game starts or when spawned
