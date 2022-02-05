@@ -37,6 +37,7 @@ AEnemy::AEnemy()
 
 	bOverlappingCombatSphere = false;
 	bIsAttacking = false;
+	bHasValidTarget = false;
 
 	EnemyMovementStatus = EEnemyMovementStatus::EMS_Idle;
 
@@ -111,6 +112,7 @@ void AEnemy::AggroSphereOnOverlapEnd(UPrimitiveComponent* OverlappedComponent, A
 		AMain* Main = Cast<AMain>(OtherActor);
 		if (Main)
 		{
+			bHasValidTarget = false;
 
 			if (Main->CombatTarget == this)
 			{
@@ -138,6 +140,7 @@ void AEnemy::CombatSphereOnOverlapBegin(UPrimitiveComponent* OverlappedComponent
 		// always check whether cast is succesful
 		if (Main)
 		{
+			bHasValidTarget = true;
 			Main->SetCombatTarget(this);
 			Main->SetHasCombatTarget(true);
 			// as soon as we overlap with character, display health bar
@@ -231,7 +234,7 @@ void AEnemy::DeactivateCollision()
 
 void AEnemy::Attack()
 {
-	if (IsAlive())
+	if (IsAlive() && bHasValidTarget)
 	{
 
 		if (AIController)
