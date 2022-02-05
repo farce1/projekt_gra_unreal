@@ -2,6 +2,7 @@
 
 #include "Explosive.h"
 #include "Main.h"
+#include "Enemy.h"
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
 #include "Engine/World.h"
@@ -17,8 +18,10 @@ void AExplosive::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor
 
 	if (OtherActor)
 	{
+		// if enemy or minion will collide with explosives - apply damage
 		AMain* Main = Cast<AMain>(OtherActor);
-		if (Main)
+		AEnemy* Enemy = Cast<AEnemy>(OtherActor);
+		if (Main || Enemy)
 		{
 			// if overlap defined only then do operation
 			if (OverlapParticles)
@@ -30,7 +33,7 @@ void AExplosive::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor
 			{
 				UGameplayStatics::PlaySound2D(this, OverlapSound);
 			}
-			Main->DecrementHealth(Damage);
+			UGameplayStatics::ApplyDamage(OtherActor, Damage, nullptr, this, DamageTypeClass);
 			// auto remove actor from the field --- super efficient :)
 			Destroy();
 		}
