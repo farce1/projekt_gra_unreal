@@ -235,7 +235,7 @@ void AMain::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 	check(PlayerInputComponent);
 
-	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
+	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &AMain::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
 	PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &AMain::ShiftKeyDown);
@@ -259,7 +259,7 @@ void AMain::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 void AMain::MoveForward(float input)
 {
 	bMovingForward = false;
-	if ((Controller != nullptr) && (input != 0.0f) && (!bIsAttacking))
+	if ((Controller != nullptr) && (input != 0.0f) && (!bIsAttacking) && (IsAlive()))
 	{
 		// find out which way is forward
 		const FRotator Rotation = Controller->GetControlRotation();
@@ -275,7 +275,7 @@ void AMain::MoveForward(float input)
 void AMain::MoveRight(float input)
 {
 	bMovingRight = false;
-	if ((Controller != nullptr) && (input != 0.0f) && (!bIsAttacking))
+	if ((Controller != nullptr) && (input != 0.0f) && (!bIsAttacking) && (IsAlive()))
 	{
 		// find out which way is forward
 		const FRotator Rotation = Controller->GetControlRotation();
@@ -324,6 +324,13 @@ void AMain::Die()
 	SetMovementStatus(EMovementStatus::EMS_Dead);
 }
 
+void AMain::Jump()
+{
+	if (IsAlive()) {
+		Super::Jump();
+	}
+}
+
 void AMain::IncrementCoin(int32 Amount)
 {
 	Coins += Amount;
@@ -361,6 +368,8 @@ void AMain::LeftMouseButtonDown()
 {
 	bLeftMouseButtonDown = true;
 
+	if (MovementStatus == EMovementStatus::EMS_Dead) return;
+
 	if (ActiveOverlappingItem && !EquippedWeapon)
 	{
 		AWeapon* Weapon = Cast<AWeapon>(ActiveOverlappingItem);
@@ -388,7 +397,7 @@ void AMain::SetEquippedWeapon(AWeapon* WeaponToSet)
 
 void AMain::Attack()
 {
-	if (!bIsAttacking && MovementStatus != EMovementStatus::EMS_Dead)
+	if (!bIsAttacking && IsAlive())
 	{
 		bIsAttacking = true;
 		SetInterpToEnemy(true);
@@ -447,4 +456,15 @@ float AMain::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEve
 	DecrementHealth(DamageAmount);
 
 	return DamageAmount;
+}
+
+void AMain::DeathEnd()
+{
+	GetMesh()->bPauseAnims = true;
+	GetMesh()->bNoSkeletonUpdate = true;
+}
+
+bool AMain::IsAlive()
+{
+	return MovementStatus != EMovementStatus::EMS_Dead;
 }

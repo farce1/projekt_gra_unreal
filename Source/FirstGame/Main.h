@@ -96,6 +96,13 @@ public:
 
 	void Die();
 
+	bool IsAlive();
+
+	UFUNCTION(BlueprintCallable)
+	void DeathEnd();
+
+	virtual void Jump() override;
+
 	void IncrementCoin(int32 Amount);
 
 	// Declare Enums as public variable

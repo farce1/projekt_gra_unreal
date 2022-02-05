@@ -245,7 +245,7 @@ void AEnemy::Attack()
 			UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 			if (AnimInstance)
 			{
-				AnimInstance->Montage_Play(CombatMontage, 1.35f);
+				AnimInstance->Montage_Play(CombatMontage, 2.0f);
 				AnimInstance->Montage_JumpToSection(FName("Attack"), CombatMontage);
 			}
 			if (SwingSound)
