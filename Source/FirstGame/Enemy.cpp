@@ -48,7 +48,7 @@ AEnemy::AEnemy()
 
 	// Animation attack timeframe
 	AttackMinTime = 0.5f;
-	AttackMaxTime = 3.5f;
+	AttackMaxTime = 1.5f;
 
 }
 
@@ -150,6 +150,7 @@ void AEnemy::CombatSphereOnOverlapBegin(UPrimitiveComponent* OverlappedComponent
 			}
 			CombatTarget = Main;
 			bOverlappingCombatSphere = true;
+
 			float AttackTime = FMath::FRandRange(AttackMinTime, AttackMaxTime);
 			GetWorldTimerManager().SetTimer(AttackTimer, this, &AEnemy::Attack, AttackTime);
 		}
