@@ -103,7 +103,11 @@ public:
 
 	virtual void Jump() override;
 
+	UFUNCTION(BlueprintCallable)
 	void IncrementCoin(int32 Amount);
+
+	UFUNCTION(BlueprintCallable)
+	void IncrementHealth(float Amount);
 
 	// Declare Enums as public variable
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Enums")
@@ -185,6 +189,13 @@ public:
 	// Give enemy location to render healthbar properly
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Combat")
 	FVector CombatTargetLocation;
+
+	// Update combat target when fighting with more than 1 enemy
+	void UpdateCombatTarget();
+
+	// Apply enemy filter
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
+	TSubclassOf<AEnemy> EnemyFilter;
 
 protected:
 	// Called when the game starts or when spawned

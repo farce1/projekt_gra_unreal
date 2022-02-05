@@ -144,7 +144,7 @@ public:
 	bool bIsAttacking;
 
 	// Handle enemy death
-	void Die();
+	void Die(AActor* Causer);
 
 	FTimerHandle DeathTimer;
 
