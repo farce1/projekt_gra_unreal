@@ -12,6 +12,7 @@
 #include "Animation/AnimInstance.h"
 #include "TimerManager.h"
 #include "Components/CapsuleComponent.h"
+#include "MainPlayerController.h"
 
 // Sets default values
 AEnemy::AEnemy()
@@ -111,6 +112,15 @@ void AEnemy::AggroSphereOnOverlapEnd(UPrimitiveComponent* OverlappedComponent, A
 		if (Main)
 		{
 
+			if (Main->CombatTarget == this)
+			{
+				Main->SetCombatTarget(nullptr);
+			}
+			if (Main->MainPlayerController)
+			{
+				Main->MainPlayerController->RemoveEnemyHealthBar();
+			}
+			Main->SetHasCombatTarget(false);
 			SetEnemyMovementStatus(EEnemyMovementStatus::EMS_Idle);
 			if (AIController)
 			{
@@ -129,6 +139,12 @@ void AEnemy::CombatSphereOnOverlapBegin(UPrimitiveComponent* OverlappedComponent
 		if (Main)
 		{
 			Main->SetCombatTarget(this);
+			Main->SetHasCombatTarget(true);
+			// as soon as we overlap with character, display health bar
+			if (Main->MainPlayerController)
+			{
+				Main->MainPlayerController->DisplayEnemyHealthBar();
+			}
 			CombatTarget = Main;
 			bOverlappingCombatSphere = true;
 			float AttackTime = FMath::FRandRange(AttackMinTime, AttackMaxTime);
@@ -147,11 +163,6 @@ void AEnemy::CombatSphereOnOverlapEnd(UPrimitiveComponent* OverlappedComponent, 
 			bOverlappingCombatSphere = false;
 			MoveToTarget(Main);
 			CombatTarget = nullptr;
-
-			if (Main->CombatTarget == this)
-			{
-				Main->SetCombatTarget(nullptr);
-			}
 			GetWorldTimerManager().ClearTimer(AttackTimer);
 		}
 	}

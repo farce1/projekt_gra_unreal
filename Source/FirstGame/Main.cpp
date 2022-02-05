@@ -13,6 +13,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Sound/SoundCue.h"
 #include "Animation/AnimInstance.h"
+#include "MainPlayerController.h"
 
 // Sets default values
 AMain::AMain()
@@ -78,6 +79,7 @@ AMain::AMain()
 
 	// Attack handlers
 	bIsAttacking = false;
+	bHasCombatTarget = false;
 
 	// Interpolation variables
 	InterpSpeed = 15.f;
@@ -89,6 +91,7 @@ void AMain::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	MainPlayerController = Cast<AMainPlayerController>(GetController());
 }
 
 // Called every frame
@@ -208,6 +211,14 @@ void AMain::Tick(float DeltaTime)
 		// get current rotation -> Target rotation -> variable that will make smooth transition
 		FRotator InterpRotation = FMath::RInterpTo(GetActorRotation(), LookAtYaw, DeltaTime, InterpSpeed);
 		SetActorRotation(InterpRotation);
+	}
+	if (CombatTarget)
+	{
+		CombatTargetLocation = CombatTarget->GetActorLocation();
+		if (MainPlayerController)
+		{
+			MainPlayerController->EnemyLocation = CombatTargetLocation;
+		}
 	}
 }
 
