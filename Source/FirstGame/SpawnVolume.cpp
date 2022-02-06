@@ -5,7 +5,8 @@
 #include "Components/BoxComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Engine/World.h"
-#include "Critter.h"
+#include "Enemy.h"
+#include "AIController.h"
 
 // Sets default values
 ASpawnVolume::ASpawnVolume()
@@ -22,6 +23,13 @@ void ASpawnVolume::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	if (FirstActor && SecondActor && ThirdActor && FourthActor)
+	{
+		SpawnArray.Add(FirstActor);
+		SpawnArray.Add(SecondActor);
+		SpawnArray.Add(ThirdActor);
+		SpawnArray.Add(FourthActor);
+	}
 }
 
 // Called every frame
@@ -42,16 +50,42 @@ FVector ASpawnVolume::GetSpawnPoint()
 }
 
 // _implementation keyword is to tell UE that this is the declaration of function from h.
-void ASpawnVolume::SpawnOurPawn_Implementation(UClass* ToSpawn, const FVector& Location)
+void ASpawnVolume::SpawnOurActor_Implementation(UClass* ToSpawn, const FVector& Location)
 {
-	if (ToSpawn) 
+	if (ToSpawn)
 	{
 		UWorld* World = GetWorld();
 		FActorSpawnParameters SpawnParams;
 
 		if (World)
 		{
-			ACritter* CritterSpawned = World->SpawnActor<ACritter>(ToSpawn, Location, FRotator(0.f), SpawnParams);
+			AActor* Actor = World->SpawnActor<AActor>(ToSpawn, Location, FRotator(0.f), SpawnParams);
+
+			AEnemy* Enemy = Cast<AEnemy>(Actor);
+			if (Enemy)
+			{
+				Enemy->SpawnDefaultController();
+
+				AAIController* AICont = Cast<AAIController>(Enemy->GetController());
+				if (AICont)
+				{
+					Enemy->AIController = AICont;
+				}
+			}
 		}
+	}
+}
+
+TSubclassOf<AActor> ASpawnVolume::GetSpawnActor()
+{
+	if (SpawnArray.Num() > 0)
+	{
+		int32 Selection = FMath::RandRange(0, SpawnArray.Num() - 1);
+
+		return SpawnArray[Selection];
+	}
+	else
+	{
+		return nullptr;
 	}
 }

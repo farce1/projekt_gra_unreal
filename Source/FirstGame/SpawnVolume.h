@@ -19,7 +19,18 @@ public:
 	class UBoxComponent* SpawningBox;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Spawning")
-	TSubclassOf<class ACritter> PawnToSpawn;
+	TSubclassOf<class AActor> FirstActor;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Spawning")
+	TSubclassOf<class AActor> SecondActor;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Spawning")
+	TSubclassOf<class AActor> ThirdActor;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Spawning")
+	TSubclassOf<class AActor> FourthActor;
+
+	TArray<TSubclassOf<AActor>> SpawnArray;
 
 protected:
 	// Called when the game starts or when spawned
@@ -34,5 +45,8 @@ public:
 
 	// Hybrid c++ and blueprint functionality with BlueprintNativeEvent
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Spawning")
-	void SpawnOurPawn(UClass* ToSpawn, const FVector& Location);
+	void SpawnOurActor(UClass* ToSpawn, const FVector& Location);
+
+	UFUNCTION(BlueprintPure, Category = "Spawning")
+	TSubclassOf<AActor> GetSpawnActor();
 };
