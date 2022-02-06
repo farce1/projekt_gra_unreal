@@ -197,6 +197,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
 	TSubclassOf<AEnemy> EnemyFilter;
 
+	// switch worlds when entering the level transition
+	void SwitchLevel(FName LevelName);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

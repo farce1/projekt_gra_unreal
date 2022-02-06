@@ -531,3 +531,21 @@ void AMain::UpdateCombatTarget()
 		bHasCombatTarget = true;
 	}
 }
+
+void AMain::SwitchLevel(FName LevelName)
+{
+	UWorld* World = GetWorld();
+	if (World)
+	{
+		// get current level
+		FString CurrentLevel = World->GetMapName();
+
+		// get string litteral from FString by *
+		FName CurrentLevelName(*CurrentLevel);
+		if (CurrentLevelName != LevelName)
+		{
+			// open next world
+			UGameplayStatics::OpenLevel(World, LevelName);
+		}
+	}
+}

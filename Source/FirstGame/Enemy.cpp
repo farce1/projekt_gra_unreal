@@ -48,7 +48,7 @@ AEnemy::AEnemy()
 
 	// Animation attack timeframe
 	AttackMinTime = 0.5f;
-	AttackMaxTime = 1.5f;
+	AttackMaxTime = 2.5f;
 
 }
 
@@ -262,7 +262,7 @@ void AEnemy::Attack()
 			UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 			if (AnimInstance)
 			{
-				AnimInstance->Montage_Play(CombatMontage, 2.0f);
+				AnimInstance->Montage_Play(CombatMontage, 1.0f);
 				AnimInstance->Montage_JumpToSection(FName("Attack"), CombatMontage);
 			}
 			if (SwingSound)
